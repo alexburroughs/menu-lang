@@ -87,7 +87,7 @@ fn parse_file(code_string : &String) -> String {
                         continue;
                     }
 
-                    final_string.push_str(&format!("char* {} = malloc(sizeof(char * SIZE_BUFF));\n", &str_vec[arg]));
+                    final_string.push_str(&format!("char* {} = malloc(sizeof(char *) SIZE_BUFF);\n", &str_vec[arg]));
                     
                     variables.push(str_vec[arg].clone());
                 }
@@ -138,7 +138,7 @@ fn parse_file(code_string : &String) -> String {
                         final_string.push_str(&str_vec[arg]);
                     }
                     else {
-                        final_string.push_str(&format!("&{}", &str_vec[arg]));
+                        final_string.push_str(&format!("{}", &str_vec[arg]));
                     }
 
                     if str_vec.len() -1 != arg {
