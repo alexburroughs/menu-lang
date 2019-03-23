@@ -5,9 +5,9 @@ use std::path::Path;
 
 use std::env;
 
-const BEGIN : &'static str = "#include <stdlib>
-#include <stdio>
-#include \"menu-standard.h\"
+const BEGIN : &'static str = "#include <stdlib.h>
+#include <stdio.h>
+#include \"std.h\"
 static int SIZE_BUFF = 50;
 int main() {";
 
