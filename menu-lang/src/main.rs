@@ -194,7 +194,7 @@ fn parse_file(code_string : &String) -> String {
     }
 
     for x in variables {
-        final_string.push_str(&format!("free(*{});\n", x));
+        final_string.push_str(&format!("free({});\n", x));
     }
 
     final_string.push_str(END);
