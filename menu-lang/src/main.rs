@@ -2,15 +2,16 @@ use std::error::Error;
 use std::io::prelude::*;
 use std::fs::File;
 use std::path::Path;
-use std::collections::HashMap;
 
 use std::env;
 
-const begin : &'static str = "#include <stdlib>
+const BEGIN : &'static str = "#include <stdlib>
 #include <stdio>
-                                int main() {";
+#include \"menu-standard.h\"
+static int SIZE_BUFF = 50;
+int main() {";
 
-const end : &'static str = "}";
+const END : &'static str = "}";
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -38,57 +39,165 @@ fn main() {
 fn parse_file(code_string : &String) -> String {
 
     let mut final_string = String::new();
-    let mut variables : HashMap<String,String> = HashMap::new();
+    let mut variables : Vec<String> = Vec::new();
+    let mut results : Vec<String> = Vec::new();
 
-    let working_string = code_string.split(";");
+    let working_string = code_string.split(&[';', '\n'][..]);
 
-    final_string.push_str(begin);
+    for x in working_string.clone() {
+        println!("{}", &x);
+    }    
+
+    final_string.push_str(BEGIN);
 
     for current in working_string {
         
         if current == "" || current == "\n" || current == " " || current == "\t" {
-            break;
+            println!(" bad{}", &current);
+            continue;
         }
-        let split_string = current.split(" ");
+
+        let current = current.trim();
+
+        let mut splitting_str = String::from(current);
+        let split_string = split_by_space(&mut splitting_str);
 
         fn is_empty(s: &str) -> bool {
             s != " " && s != "\n" && s != "\t" && s != ""
         }
         
-        let t = split_string.filter(|s| is_empty(s));
+        let t = split_string.iter().filter(|s| is_empty(s)).collect::<Vec<_>>();
         
-        let mut str_vec : Vec<String> = Vec::new();
-
-        for x in t {
-            str_vec.push(String::from(x).clone());
+        if t.len() == 0 {
+            break;
         }
 
-        println!("here");
-        let tmp_str = str_vec[0].clone();
+        let mut str_vec : Vec<String> = Vec::new();
+        for x in t {
+            str_vec.push(x.clone());
+        }
 
+        println!("{}", current);
+        let tmp_str = str_vec[0].clone();
+        let str_vec = str_vec.into_iter().filter(|s| is_empty(s)).collect::<Vec<_>>();
         match tmp_str.as_ref() {
-            "out" => {
-                final_string.push_str("printf(\"");
+            "dec" => {
                 for arg in 1..str_vec.len() {
-                    if str_vec[arg].starts_with('"') {
-                        let tmp = str_vec[arg].replace('"', "");
-                        final_string.push_str(&tmp);
-                    }
-                    else if str_vec[arg] == "" || str_vec[arg] == "\n" || str_vec[arg] == " " || str_vec[arg] == "\t" {
+                     if str_vec[arg] == "" || str_vec[arg] == "\n" || str_vec[arg] == " " || str_vec[arg] == "\t" {
                         continue;
                     }
 
-                    if str_vec.len() != arg {
-                            final_string.push_str(",");
+                    final_string.push_str(&format!("char* {} = malloc(sizeof(char * SIZE_BUFF));\n", &str_vec[arg]));
+                    
+                    variables.push(str_vec[arg].clone());
+                }
+            },
+            "res" => {
+
+                let mut tmp = 1;
+
+                loop {
+                    if str_vec[tmp] == "" || str_vec[tmp] == "\n" || str_vec[tmp] == " " || str_vec[tmp] == "\t" {
+                        tmp += 1;
+                        continue;
+                    }
+                    else {
+                        break;
                     }
                 }
-                final_string.push_str("\");");
+                
+                if results.contains(&str_vec[tmp]) {
+                    final_string.push_str(&format!("{} = ", &str_vec[tmp]));
+                }
+                else {
+                    final_string.push_str(&format!("int {} = ", &str_vec[tmp]));
+                    
+                    results.push(str_vec[tmp].clone());
+                }
+                tmp += 1;
+
+                loop {
+                    if str_vec[tmp] == "" || str_vec[tmp] == "\n" || str_vec[tmp] == " " || str_vec[tmp] == "\t" {
+                        tmp += 1;
+                        continue;
+                    }
+                    else {
+                        break;
+                    }
+                }
+
+                final_string.push_str(&format!("{} (", str_vec[tmp]));
+
+                for arg in (tmp+1)..str_vec.len() {
+
+                    if str_vec[arg] == "" || str_vec[arg] == "\n" || str_vec[arg] == " " || str_vec[arg] == "\t" {
+                        continue;
+                    }
+
+                    if str_vec[arg].starts_with("\"") {
+                        final_string.push_str(&str_vec[arg]);
+                    }
+                    else {
+                        final_string.push_str(&format!("&{}", &str_vec[arg]));
+                    }
+
+                    if str_vec.len() -1 != arg {
+                            final_string.push_str(",");
+                    }
+                    println!("{}", str_vec[arg]);
+                }
+
+                final_string.push_str(");\n");
             },
-            _ => {},
+            "on" => {
+                let mut tmp = 1;
+
+                loop {
+                    if str_vec[tmp] == "" || str_vec[tmp] == "\n" || str_vec[tmp] == " " || str_vec[tmp] == "\t" {
+                        tmp += 1;
+                        continue;
+                    }
+                    else {
+                        break;
+                    }
+                }
+
+                final_string.push_str(&format!("if ( {} ) {}\n", str_vec[tmp], "{"));
+            },
+            "end" => {
+                final_string.push_str("}\n");
+            },
+            _ => {
+                final_string.push_str(&format!("{} (", tmp_str));
+                println!("{}", str_vec.len());
+                for arg in 1..str_vec.len() {
+
+                     if str_vec[arg] == "" || str_vec[arg] == "\n" || str_vec[arg] == " " || str_vec[arg] == "\t" {
+                        continue;
+                    }
+
+                    if str_vec[arg].starts_with("\"") {
+                        final_string.push_str(&str_vec[arg]);
+                    }
+                    else {
+                        final_string.push_str(&format!("&{}", &str_vec[arg]));
+                    }
+
+                    if str_vec.len() -1 != arg {
+                            final_string.push_str(",");
+                    }
+                    println!("{}", str_vec[arg]);
+                }
+                final_string.push_str(");\n");
+            },
         }
     }
 
-    final_string.push_str(end);
+    for x in variables {
+        final_string.push_str(&format!("free(*{});\n", x));
+    }
+
+    final_string.push_str(END);
 
     return final_string;
 }
@@ -127,4 +236,30 @@ fn out_file(path : &String, contents : &String) {
         },
         Ok(_) => println!("compilation successful"),
     }
+}
+
+fn split_by_space(inp : &mut String) -> Vec<String> {
+
+    inp.push(' ');
+    let mut fin : Vec<String> = Vec::new();
+
+    let mut current = String::from("");
+
+    let mut in_char = false;
+
+    for x in inp.chars() {
+        if (x == ' ' || x == '\n' || x == '\t') && !in_char {
+            fin.push(current.clone());
+            current = String::from("");
+        }
+        else if x == '"' {
+            in_char = !in_char;
+            current.push(x);
+        }
+        else {
+            current.push(x);
+        }
+    }
+
+    return fin;
 }

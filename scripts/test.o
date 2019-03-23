@@ -1,3 +1,24 @@
 #include <stdlib>
 #include <stdio>
-                                int main() {printf("hello,,,");
+#include "menu-standard.h"
+static int SIZE_BUFF = 50;
+int main() {char* a = malloc(sizeof(char * SIZE_BUFF));
+char* b = malloc(sizeof(char * SIZE_BUFF));
+char* c = malloc(sizeof(char * SIZE_BUFF));
+char* var = malloc(sizeof(char * SIZE_BUFF));
+out ("hello there general kenobi");
+out (&var);
+int result = in (&a);
+if ( result ) {
+out ("success");
+in (&var);
+}
+out ("here");
+out ("here");
+out ("there");
+out ("over there");
+free(*a);
+free(*b);
+free(*c);
+free(*var);
+}
