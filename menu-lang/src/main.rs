@@ -164,6 +164,21 @@ fn parse_file(code_string : &String) -> String {
 
                 final_string.push_str(&format!("if ( {} ) {}\n", str_vec[tmp], "{"));
             },
+            "while" => {
+                let mut tmp = 1;
+
+                loop {
+                    if str_vec[tmp] == "" || str_vec[tmp] == "\n" || str_vec[tmp] == " " || str_vec[tmp] == "\t" {
+                        tmp += 1;
+                        continue;
+                    }
+                    else {
+                        break;
+                    }
+                }
+
+                final_string.push_str(&format!("while ( {} ) {}\n", str_vec[tmp], "{"));
+            },
             "end" => {
                 final_string.push_str("}\n");
             },
