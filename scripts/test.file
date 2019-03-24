@@ -1,12 +1,12 @@
 dec a  b c
 dec  var
-out  "hello there general kenobi"
+out  "hello there general kenobi\n"
 out  var
 res  result in a
 on result >
     out "success"
     in var
 end
-out "here"
-out "here"; out "there";
+out "here\n"
+out "here\n"; out "there\n";
 out "over there"
