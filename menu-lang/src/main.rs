@@ -41,24 +41,26 @@ fn parse_file(code_string : &String) -> String {
     let mut final_string = String::new();
     let mut variables : Vec<String> = Vec::new();
     let mut results : Vec<String> = Vec::new();
+    let mut pointers : Vec<String> = Vec::new();
 
-    let working_string = code_string.split(&[';', '\n'][..]);
+    let working_string = code_string.split(&[';', '\n'][..]).collect::<Vec<_>>();
 
     for x in working_string.clone() {
-        println!("{}", &x);
+        println!("ws: {}", &x);
     }    
 
     final_string.push_str(BEGIN);
 
     for current in working_string {
         
+        println!("current: {}", current);
         if current == "" || current == "\n" || current == " " || current == "\t" {
-            println!(" bad{}", &current);
+            println!("bad: {}", &current);
             continue;
         }
 
         let current = current.trim();
-
+        println!("current2: {}", current);
         let mut splitting_str = String::from(current);
         let split_string = split_by_space(&mut splitting_str);
 
@@ -77,11 +79,21 @@ fn parse_file(code_string : &String) -> String {
             str_vec.push(x.clone());
         }
 
-        println!("{}", current);
         let tmp_str = str_vec[0].clone();
-        let str_vec = str_vec.into_iter().filter(|s| is_empty(s)).collect::<Vec<_>>();
+        let mut str_vec = str_vec.into_iter().filter(|s| is_empty(s)).collect::<Vec<_>>();
         match tmp_str.as_ref() {
             "dec" => {
+                for arg in 1..str_vec.len() {
+                     if str_vec[arg] == "" || str_vec[arg] == "\n" || str_vec[arg] == " " || str_vec[arg] == "\t" {
+                        continue;
+                    }
+
+                    final_string.push_str(&format!("char* {} = malloc(sizeof(char) * SIZE_BUFF);\n", &str_vec[arg]));
+                    
+                    variables.push(str_vec[arg].clone());
+                }
+            },
+            "list" => {
                 for arg in 1..str_vec.len() {
                      if str_vec[arg] == "" || str_vec[arg] == "\n" || str_vec[arg] == " " || str_vec[arg] == "\t" {
                         continue;
@@ -99,7 +111,6 @@ fn parse_file(code_string : &String) -> String {
                 loop {
                     if str_vec[tmp] == "" || str_vec[tmp] == "\n" || str_vec[tmp] == " " || str_vec[tmp] == "\t" {
                         tmp += 1;
-                        continue;
                     }
                     else {
                         break;
@@ -119,7 +130,6 @@ fn parse_file(code_string : &String) -> String {
                 loop {
                     if str_vec[tmp] == "" || str_vec[tmp] == "\n" || str_vec[tmp] == " " || str_vec[tmp] == "\t" {
                         tmp += 1;
-                        continue;
                     }
                     else {
                         break;
@@ -155,7 +165,6 @@ fn parse_file(code_string : &String) -> String {
                 loop {
                     if str_vec[tmp] == "" || str_vec[tmp] == "\n" || str_vec[tmp] == " " || str_vec[tmp] == "\t" {
                         tmp += 1;
-                        continue;
                     }
                     else {
                         break;
@@ -170,7 +179,6 @@ fn parse_file(code_string : &String) -> String {
                 loop {
                     if str_vec[tmp] == "" || str_vec[tmp] == "\n" || str_vec[tmp] == " " || str_vec[tmp] == "\t" {
                         tmp += 1;
-                        continue;
                     }
                     else {
                         break;
@@ -178,6 +186,55 @@ fn parse_file(code_string : &String) -> String {
                 }
 
                 final_string.push_str(&format!("while ( {} ) {}\n", str_vec[tmp], "{"));
+            },
+            "def" => {
+                let mut tmp = 1;
+                let mut to_be_added : String = String::from("");
+
+                if str_vec[tmp] == "res" {
+                    tmp += 1;
+                    to_be_added.push_str("int ");
+                }
+                to_be_added.push_str(&format!(" (* {} ) (", &str_vec[tmp]));
+                pointers.push(str_vec[tmp].clone());
+                tmp += 1;
+
+                for arg in tmp..str_vec.len() {
+                     if str_vec[arg] == "" || str_vec[arg] == "\n" || str_vec[arg] == " " || str_vec[arg] == "\t" {
+                        continue;
+                    }
+                    str_vec[arg] = str_vec[arg].trim().to_string();
+                    match str_vec[arg].as_ref() {
+                        "str" => {
+                            to_be_added.push_str("char*");
+                            if str_vec[arg+1] != "->" {
+                                to_be_added.push(',');
+                            }
+                        },
+
+                        "res" => {
+                            to_be_added.push_str("int");
+                            if str_vec[arg+1] != "->" {
+                                to_be_added.push(',');
+                            }
+                        },
+                        "list" => {
+                            to_be_added.push_str("list*");
+                            if str_vec[arg+1] != "->" {
+                                to_be_added.push(',');
+                            }
+                        },
+                        "->" => {
+                            to_be_added.push_str(") ");
+                        },
+                        _ => {
+                            to_be_added.push_str(&format!("= {};\n", str_vec[arg]));
+                        },
+                    }
+                
+                }
+
+                final_string.push_str(&to_be_added);
             },
             "end" => {
                 final_string.push_str("}\n");
