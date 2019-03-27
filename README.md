@@ -3,7 +3,7 @@
 #### Description
 Menu-lang or mlang is a simple language that compiles into C. 
 It is designed for small and fast scripts that can be written in a short amount of time. 
-Functions can be written in C and imported into a menu-lang script. 
+Functions can be written in C and imported into an mlang script. 
 ```diff
 - Note: Some features described in this document may not be implemented yet.
 ```
