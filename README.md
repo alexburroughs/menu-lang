@@ -48,7 +48,7 @@ out b
 All strings are passed by value to functions. Functions may modify or copy the data depending on the implementation, for example: in will set the string sent in to the users input, list_add will copy the string before adding it to a list.
 
 #### Lists
-Lists are used to store an array of strings. There are several list commands and functions, list creates a new list, list_add appends to the end of a list, list_remove_at removes from a list and so on. When adding a string to a list, the string is sent by reference but compied in the function so the list will not add a reference to the string but the value of the string.
+Lists are used to store an array of strings. Lists are laso pass by value. There are several list commands and functions, list creates a new list, list_add appends to the end of a list, list_remove_at removes from a list and so on. When adding a string to a list, the string is sent by reference but compied in the function so the list will not add a reference to the string but the value of the string.
 ```
 list l
 list_add l "hello"
