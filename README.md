@@ -71,7 +71,7 @@ res result out "hello"
 You can pass a function pointer as an argument:
 
 ```
-def res pnt greater_than_five str
+def res pnt str -> greater_than_five
 list a
 populate_list a
 filter a pnt
