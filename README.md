@@ -45,8 +45,34 @@ out a
 out b
 ```
 
-All strings are passed by value to functions. Functions may modify or copy the data depending on the implementation, for example: in will set the string sent in to the users input, list_add will copy the string before adding it to a list
+All strings are passed by value to functions. Functions may modify or copy the data depending on the implementation, for example: in will set the string sent in to the users input, list_add will copy the string before adding it to a list.
 
 #### Lists
+Lists are used to store an array of strings. There are several list commands and functions, list creates a new list, list_add appends to the end of a list, list_remove_at removes from a list and so on. When adding a string to a list, the string is sent by reference but compied in the function so the list will not add a reference to the string but the value of the string.
+```
+list l
+list_add l "hello"
+list_add l "world"
+
+out_all l
+```
 
 #### Function pointers
+Function pointers are used as arguments to some functions. You can create and call a function pointer like this:
+```
+*define pnt_to_out, returns a result and takes a string*
+*as an argument, points to the out function*
+def res pnt_to_out str -> out
+
+*call out function*
+res result out "hello"
+```
+
+You can pass a function pointer as an argument:
+
+```
+def res pnt greater_than_five str
+list a
+populate_list a
+filter a pnt
+```
