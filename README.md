@@ -76,3 +76,11 @@ list a
 populate_list a
 filter a pnt
 ```
+
+#### Upcoming changes
+- Assigning and declaring at the same time
+- List functions and declaration
+- ok and err
+- Smart results
+- Creating functions
+- Importing C functions
