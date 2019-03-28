@@ -8,6 +8,7 @@ use std::env;
 const BEGIN : &'static str = "#include <stdlib.h>
 #include <stdio.h>
 #include \"std.h\"
+#include \"arraylist.h\"
 static int SIZE_BUFF = 50;
 int main() {";
 
@@ -42,6 +43,8 @@ fn parse_file(code_string : &String) -> String {
     let mut variables : Vec<String> = Vec::new();
     let mut results : Vec<String> = Vec::new();
     let mut pointers : Vec<String> = Vec::new();
+
+    let mut is_res = false;
 
     let working_string = code_string.split(&[';', '\n'][..]).collect::<Vec<_>>();
 
@@ -99,7 +102,7 @@ fn parse_file(code_string : &String) -> String {
                         continue;
                     }
 
-                    final_string.push_str(&format!("char* {} = malloc(sizeof(char) * SIZE_BUFF);\n", &str_vec[arg]));
+                    final_string.push_str(&format!("ArrayList* {} = list_new(SIZE_BUFF);\n", &str_vec[arg]));
                     
                     variables.push(str_vec[arg].clone());
                 }
@@ -117,7 +120,19 @@ fn parse_file(code_string : &String) -> String {
                     }
                 }
                 
-                if results.contains(&str_vec[tmp]) {
+
+                if str_vec[tmp] == "!" {
+                    is_res = true;
+                    if results.contains(&String::from("dec")) {
+                        final_string.push_str("dec = ");
+                    }
+                    else {
+                        final_string.push_str("int dec = ");
+                        
+                        results.push(str_vec[tmp].clone());
+                    }
+                }
+                else if results.contains(&str_vec[tmp]) {
                     final_string.push_str(&format!("{} = ", &str_vec[tmp]));
                 }
                 else {
@@ -170,8 +185,12 @@ fn parse_file(code_string : &String) -> String {
                         break;
                     }
                 }
-
-                final_string.push_str(&format!("if ( {} ) {}\n", str_vec[tmp], "{"));
+                if str_vec[tmp] == ">" {
+                    final_string.push_str("if ( dec ) {");
+                }
+                else {
+                    final_string.push_str(&format!("if ( {} ) {}\n", str_vec[tmp], "{")); 
+                }
             },
             "while" => {
                 let mut tmp = 1;

@@ -29,6 +29,10 @@ char* copyVal(char* c) {
   return ret;
 }
 
+ArrayList * list_new(unsigned int len) {
+	return arraylist_new(len);
+}
+
 int list_add(ArrayList* l, char * str) {
 	arraylist_append(l, copyVal(str));
 	return 1;
