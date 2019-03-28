@@ -7,7 +7,7 @@ on result >
     out "success"
     in var
 end
-on result > out "res\n"; end
+on result >; out "res\n"; end
 out "here\n"
 out "here\n"; out "there\n"
 out "over there"

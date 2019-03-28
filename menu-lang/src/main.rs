@@ -354,3 +354,26 @@ fn split_by_space(inp : &mut String) -> Vec<String> {
 
     return fin;
 }
+
+fn split_line(inp : &mut String) -> Vec<String> {
+
+    let mut final_vec : Vec<String> = Vec::new();
+
+    let mut current_str = String::from("");
+    let mut is_line = false;
+
+    for x in inp.chars() {
+        if (x == '\n' || x == ';') && !is_line{
+            
+            final_vec.push(current_str);
+            current_str = String::from("");
+            is_line = true;
+        }
+        else if x != '\n' && x != ';' {
+            current_str.push(x);
+            is_line = false;
+        }
+    }
+
+    final_vec
+}
