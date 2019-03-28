@@ -84,3 +84,4 @@ filter a pnt
 - Smart results
 - Creating functions
 - Importing C functions
+- Value functions
