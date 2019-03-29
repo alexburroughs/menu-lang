@@ -46,17 +46,13 @@ fn parse_file(code_string : &String) -> String {
 
     let mut is_res = false;
 
-    let working_string = code_string.split(&[';', '\n'][..]).collect::<Vec<_>>();
-
-    for x in working_string.clone() {
-        println!("ws: {}", &x);
-    }    
+    let working_string = code_string.split(&[';', '\n'][..]).collect::<Vec<_>>(); 
 
     final_string.push_str(BEGIN);
 
     for current in working_string {
         
-        println!("current: {}", current);
+        //println!("current: {}", current);
         if current == "" || current == "\n" || current == " " || current == "\t" {
             println!("bad: {}", &current);
             continue;
@@ -411,10 +407,24 @@ fn split_line(inp : &mut String) -> Vec<String> {
  */
 fn get_line_tokens(line : &mut String) -> Statement {
 
-    let tokens : Vec<String> = Vec::new();
     let mut stmt : Statement = Statement::default();
 
-    stmt.tokens = tokens;
+    stmt.tokens = split_by_space(line);
+
+    stmt.stmt_type =
+        match stmt.tokens
+        .get(0)
+        .expect("Error unwrapping tokens")
+        .as_ref() {
+            "res" => StatementType::Res,
+            "dec" => StatementType::Dec,
+            "def" => StatementType::Def,
+            "list" => StatementType::List,
+            "on" => StatementType::On,
+            "while" => StatementType::While,
+            "end" => StatementType::End,
+            _ => panic!("Invalid type")
+        };
 
     stmt
 }
@@ -436,5 +446,10 @@ impl Default for Statement {
 
 enum StatementType {
     Res,
-
+    Dec,
+    Def,
+    List,
+    On,
+    While,
+    End
 }
