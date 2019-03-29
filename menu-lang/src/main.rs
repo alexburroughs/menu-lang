@@ -293,6 +293,12 @@ fn parse_file(code_string : &String) -> String {
     return final_string;
 }
 
+/* load_file
+ *
+ * input:   Path to read from
+ * purpose: Read the contents of the file
+ * output:  String of the file contents
+ */
 fn load_file(path : &String) -> Option<String> {
 
     let file_path = File::open(path);
@@ -310,6 +316,12 @@ fn load_file(path : &String) -> Option<String> {
     }
 }
 
+/* out_file
+ *
+ * input:   Path to write to, contents to write
+ * purpose: Write the contents to the file
+ * output:  None
+ */
 fn out_file(path : &String, contents : &String) {
     let path = Path::new(path);
     let display = path.display();
@@ -329,6 +341,12 @@ fn out_file(path : &String, contents : &String) {
     }
 }
 
+/* split_by_space
+ *
+ * input:   String to split on
+ * purpose: Split a string by spaces ignoring doubles
+ * output:  Vector of strings
+ */
 fn split_by_space(inp : &mut String) -> Vec<String> {
 
     inp.push(' ');
@@ -355,6 +373,12 @@ fn split_by_space(inp : &mut String) -> Vec<String> {
     return fin;
 }
 
+/* split_line
+ *
+ * input:   The string to be split
+ * purpose: Split a string into a vector of lines
+ * output:  Vector of lines
+ */
 fn split_line(inp : &mut String) -> Vec<String> {
 
     let mut final_vec : Vec<String> = Vec::new();
@@ -376,4 +400,41 @@ fn split_line(inp : &mut String) -> Vec<String> {
     }
 
     final_vec
+}
+
+/* get_line_tokens
+ *
+ * input:   String of the current line to be converted
+ * purpose: Produce a statement object from a line
+ * output:  Statement object containing the strings in 
+ *          the line and the statement type
+ */
+fn get_line_tokens(line : &mut String) -> Statement {
+
+    let tokens : Vec<String> = Vec::new();
+    let mut stmt : Statement = Statement::default();
+
+    stmt.tokens = tokens;
+
+    stmt
+}
+
+
+struct Statement {
+    tokens : Vec<String>,
+    stmt_type : StatementType,
+}
+
+impl Default for Statement {
+    fn default() -> Statement {
+        Statement {
+            tokens: Vec::new(),
+            stmt_type: StatementType::Res,
+        }
+    }
+}
+
+enum StatementType {
+    Res,
+
 }
