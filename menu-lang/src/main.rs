@@ -25,19 +25,19 @@ fn main() {
     let out_filename = &args[2];
 
     let code_opt = load_file(&in_filename);
-    let code_string : String;
+    let mut code_string : String;
 
     match code_opt {
         Some(x) => code_string = x,
         None => panic!("error unwrapping file"),
     }
 
-    let res = parse_file(&code_string);
+    let res = parse_file(&mut code_string);
 
     out_file(&out_filename, &res);
 }
 
-fn parse_file(code_string : &String) -> String {
+fn parse_file(code_string : &mut String) -> String {
 
     let mut final_string = String::new();
     let mut variables : Vec<String> = Vec::new();
@@ -45,6 +45,14 @@ fn parse_file(code_string : &String) -> String {
     let mut pointers : Vec<String> = Vec::new();
 
     let mut is_res = false;
+
+    let mut tmp_str = code_string.clone();
+
+    let mut lines : Vec<Statement> = Vec::new();
+
+    for mut x in split_line(&mut tmp_str) {
+       lines.push(get_line_tokens(&mut x));
+    }
 
     let working_string = code_string.split(&[';', '\n'][..]).collect::<Vec<_>>(); 
 
@@ -423,7 +431,7 @@ fn get_line_tokens(line : &mut String) -> Statement {
             "on" => StatementType::On,
             "while" => StatementType::While,
             "end" => StatementType::End,
-            _ => panic!("Invalid type")
+            _ => StatementType::Call
         };
 
     stmt
@@ -444,6 +452,9 @@ impl Default for Statement {
     }
 }
 
+/*
+ * The statements command to execute
+ */
 enum StatementType {
     Res,
     Dec,
@@ -451,5 +462,6 @@ enum StatementType {
     List,
     On,
     While,
-    End
+    End,
+    Call
 }
