@@ -2,7 +2,6 @@ use std::error::Error;
 use std::io::prelude::*;
 use std::fs::File;
 use std::path::Path;
-
 use std::env;
 
 const BEGIN : &'static str = "#include <stdlib.h>
@@ -453,7 +452,7 @@ impl Default for Statement {
 }
 
 /*
- * The statements command to execute
+ * The statements command to add and then execute
  */
 enum StatementType {
     Res,

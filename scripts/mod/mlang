@@ -1,0 +1,4 @@
+#!/bin/bash
+
+menu-lang $1.m $1.c > /dev/null
+gcc *.c *.h --std=c99 -o $1

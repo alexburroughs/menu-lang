@@ -1,14 +1,21 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <arraylist.h>
+#include "arraylist.h"
+#include <string.h>
 
 int out(char* str) {
 	printf("%s", str);
 	return 1;
 }
 
+int out_line(char* str) {
+
+	printf("%s\n", str);
+	return 1;
+}
+
 int in(char * str) {
-	scanf("%s", &str);
+	scanf("%s", str);
 	return 1;
 }
 
@@ -35,5 +42,11 @@ ArrayList * list_new(unsigned int len) {
 
 int list_add(ArrayList* l, char * str) {
 	arraylist_append(l, copyVal(str));
+	return 1;
+}
+
+int set(char* dest, char* src) {
+	
+	strcpy(dest, src);
 	return 1;
 }
