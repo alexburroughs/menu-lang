@@ -7,5 +7,6 @@ int out_line(char* str);
 int in(char* str);
 int set(char* dest, char* src);
 int list_add(ArrayList *l, char* str);
+int sys(char* str);
 ArrayList * list_new(unsigned int tlen);
 #endif

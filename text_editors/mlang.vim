@@ -23,6 +23,7 @@ syn region celDescComm start='*' end='*'
 let b:current_syntax = "cel"
 
 hi def link celComment     Comment
+hi def link celDescComm    Comment
 hi def link celBlockCmd    Statement
 hi def link celString      Constant
 hi def link celDesc        PreProc    

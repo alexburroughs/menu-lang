@@ -30,7 +30,7 @@ fn main() {
         Some(x) => code_string = x,
         None => panic!("error unwrapping file"),
     }
-
+	let mut code_string = delete_comments(&code_string);
     let res = parse_file(&mut code_string);
 
     out_file(&out_filename, &res);
@@ -360,7 +360,7 @@ fn split_by_space(inp : &mut String) -> Vec<String> {
     let mut in_char = false;
 
     for x in inp.chars() {
-        if (x == ' ' || x == '\n' || x == '\t') && !in_char {
+        if (x == ' ' || x == '\n' || x == '\t') && !in_char{
             fin.push(current.clone());
             current = String::from("");
         }
@@ -403,6 +403,25 @@ fn split_line(inp : &mut String) -> Vec<String> {
     }
 
     final_vec
+}
+
+fn delete_comments(inp : &String) -> String {
+
+	let mut ret_str = String::from("");
+	let mut in_comment = false;
+
+	for x in inp.chars() {
+		if x == '*' {
+			in_comment = !in_comment;
+			continue;
+		}
+
+		if !in_comment {
+			ret_str.push(x);
+		}
+	}
+
+	return ret_str;
 }
 
 /* get_line_tokens

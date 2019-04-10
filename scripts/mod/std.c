@@ -15,7 +15,7 @@ int out_line(char* str) {
 }
 
 int in(char * str) {
-	scanf("%s", str);
+	fgets(str, 50, stdin);
 	return 1;
 }
 
@@ -49,4 +49,15 @@ int set(char* dest, char* src) {
 	
 	strcpy(dest, src);
 	return 1;
+}
+
+int sys(char* str) {
+	
+	int ret = system(str);
+
+	if (ret == 0) {
+		return 1;
+	}
+
+	return 0;
 }
