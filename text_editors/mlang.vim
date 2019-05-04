@@ -8,7 +8,7 @@ if exists("b:current_syntax")
 endif
 
 " Keywords
-syn keyword celBlockCmd dec def list on res while  mod
+syn keyword celBlockCmd dec def list on res while mod end collect expect
 
 " Cell blocks
 syn keyword celDescBlock str ls

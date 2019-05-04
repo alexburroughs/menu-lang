@@ -6,10 +6,12 @@ use std::env;
 
 const BEGIN : &'static str = "#include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+#include <stdarg.h>
 #include \"std.h\"
 #include \"arraylist.h\"
 static int SIZE_BUFF = 50;
-int main() {";
+int main(int argc, char** argv) {";
 
 const END : &'static str = "}";
 
@@ -44,6 +46,7 @@ fn parse_file(code_string : &mut String) -> String {
     let mut pointers : Vec<String> = Vec::new();
 
     let mut is_res = false;
+	let mut in_function = false;
 
     let mut tmp_str = code_string.clone();
 
@@ -129,15 +132,18 @@ fn parse_file(code_string : &mut String) -> String {
                     if results.contains(&String::from("dec")) {
                         final_string.push_str("dec = ");
                     }
+
                     else {
                         final_string.push_str("int dec = ");
                         
                         results.push(str_vec[tmp].clone());
                     }
                 }
+
                 else if results.contains(&str_vec[tmp]) {
                     final_string.push_str(&format!("{} = ", &str_vec[tmp]));
                 }
+
                 else {
                     final_string.push_str(&format!("int {} = ", &str_vec[tmp]));
                     
@@ -258,6 +264,38 @@ fn parse_file(code_string : &mut String) -> String {
 
                 final_string.push_str(&to_be_added);
             },
+			"collect" => {
+				if !in_function {
+					let mut current_ind = 1;
+					for arg in 1..str_vec.len() {
+
+                      	if str_vec[arg] == "" || str_vec[arg] == "\n" || str_vec[arg] == " " || str_vec[arg] == "\t" {
+                         	continue;
+                     	}
+
+						final_string.push_str(&format!("char* {}  = malloc(sizeof(char) * SIZE_BUFF);\n", &str_vec[arg]));
+						final_string.push_str(&format!("strcpy({}, argv[{}]);\n", &str_vec[arg], &current_ind));
+                    	variables.push(str_vec[arg].clone());
+		
+						current_ind += 1;
+					}
+				}
+			},
+			"expect" => {
+				if !in_function {
+					let mut to_be_added : String = String::from("");
+
+					for arg in 1..str_vec.len() {
+						if str_vec[arg] == "" || str_vec[arg] == "\n" || str_vec[arg] == " " || str_vec[arg] == "\t" {
+							continue;
+						}
+
+						to_be_added.push_str(&format!("{}, ", str_vec[arg]));
+					}	
+					
+					final_string.push_str(&format!("expect( {} argc);\n", to_be_added));
+				}
+			},
             "end" => {
                 final_string.push_str("}\n");
             },
@@ -409,9 +447,13 @@ fn delete_comments(inp : &String) -> String {
 
 	let mut ret_str = String::from("");
 	let mut in_comment = false;
+	let mut in_string = false;
 
 	for x in inp.chars() {
-		if x == '*' {
+		if x == '"' {
+			in_string = !in_string;
+		}
+		if x == '*' && !in_string {
 			in_comment = !in_comment;
 			continue;
 		}
@@ -449,6 +491,8 @@ fn get_line_tokens(line : &mut String) -> Statement {
             "on" => StatementType::On,
             "while" => StatementType::While,
             "end" => StatementType::End,
+			"collect" => StatementType::Collect,
+			"expect" => StatementType::Expect,
             _ => StatementType::Call
         };
 
@@ -481,5 +525,9 @@ enum StatementType {
     On,
     While,
     End,
-    Call
+    Call,
+	Proc,
+	Func,
+	Collect,
+	Expect
 }

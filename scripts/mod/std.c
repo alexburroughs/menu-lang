@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "arraylist.h"
 #include <string.h>
+#include <stdarg.h>
 
 int out(char* str) {
 	printf("%s", str);
@@ -60,4 +61,29 @@ int sys(char* str) {
 	}
 
 	return 0;
+}
+
+int expect(char* ex, char* msg, int actual) {
+	
+	if (atoi(ex) > actual -1 )  {
+		out_line(msg);
+		exit(1);
+	}
+
+	return 1;
+}
+
+int concat(char* num, char* onto,...) {
+	
+	va_list valist;
+
+	va_start(valist, atoi(num));
+
+	for (int i = 0; i < atoi(num); i++){
+		strcat(onto, va_arg(valist, char*));
+	}
+	
+	va_end(valist);
+
+	return 1;
 }
