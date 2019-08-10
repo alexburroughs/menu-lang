@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdarg.h>
 #include "std.h"
 #include "arraylist.h"
 static int SIZE_BUFF = 50;
